@@ -3,6 +3,40 @@ from models import User
 from flask import request, jsonify
 import jwt
 import random, time
+from functools import wraps
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'Authorization' in request.headers:
+            auth = request.headers['Authorization']
+            print(auth)
+            if not check_auth(auth):
+                return authenticate()
+        else:
+            return authenticate()
+        return f(*args, **kwargs)
+
+    return decorated
+
+
+def check_auth(accessToken):
+    try:
+        global payload, current_user
+        payload = jwt.decode(accessToken, app.config['SECRET_KEY'])
+        print(payload)
+        current_user = User.objects.get(email=payload['email'])
+    except jwt.ExpiredSignatureError:
+        return False
+    return True
 
                     #AUTHENTICATION
 @app.route('/login', methods=['POST'])
@@ -47,6 +81,7 @@ def getAccessToken():
 
                     #USER MANAGEMENT
 #create user endpoint
+@requires_auth
 @app.route('/users/create', methods=['POST'])
 def createUserMethod():
     content = request.get_json()
@@ -58,8 +93,9 @@ def createUserMethod():
         return jsonify({'result': 'success', 'message': 'User created'})
 
 #delete user endpoint
+@requires_auth
 @app.route('/users/delete', methods=['POST'])
-def createUserMethod():
+def deleteUserMethod():
     content = request.get_json()
     if not User.objects(email=content['email']):
         return jsonify({'result': 'fail', 'message': 'User does not exist'})
