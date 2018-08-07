@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from app import db
 
 class Weather(db.Document):
@@ -109,3 +110,12 @@ class DynamicRow(db.Document):
     meta = {'collection': 'DynamicRow'}
 
 
+=======
+from app import db
+
+class User(db.Document):
+    email = db.StringField(unique=True)
+    password = db.StringField()
+    refreshSecret = db.LongField()
+    role = db.StringField()
+>>>>>>> de47050ad09df9b5ed8c8ffbb55a842d4c441b77
