@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from app import db
 
 class Weather(db.Document):
@@ -104,18 +103,8 @@ class DataReceived(db.EmbeddedDocument):
     events = db.EmbeddedDocumentListField(Events)
 
 class DynamicRow(db.Document):
-    timeStamp = db.LongField()
+    timeStamp = db.StringField()
     motor = db.EmbeddedDocumentField(Motor)
-    dataRecieved = db.EmbeddedDocumentField(DataReceived)
+    dataReceived = db.EmbeddedDocumentField(DataReceived)
     meta = {'collection': 'DynamicRow'}
 
-
-=======
-from app import db
-
-class User(db.Document):
-    email = db.StringField(unique=True)
-    password = db.StringField()
-    refreshSecret = db.LongField()
-    role = db.StringField()
->>>>>>> de47050ad09df9b5ed8c8ffbb55a842d4c441b77
