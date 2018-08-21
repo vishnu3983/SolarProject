@@ -103,8 +103,8 @@ class DataReceived(db.EmbeddedDocument):
     events = db.EmbeddedDocumentListField(Events)
 
 class DynamicRow(db.Document):
-    timeStamp = db.LongField()
+    timeStamp = db.StringField()
     motor = db.EmbeddedDocumentField(Motor)
-    dataRecieved = db.EmbeddedDocumentField(DataReceived)
+    dataReceived = db.EmbeddedDocumentField(DataReceived)
     meta = {'collection': 'DynamicRow'}
 

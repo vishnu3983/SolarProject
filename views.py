@@ -118,3 +118,37 @@ def getZoneControllerInfo(zoneID):
     data = {'ZoneData': zone, 'RowData': row_data}
 
     return jsonify({'result': 'success', 'message': data})
+
+@app.route('/getStaticData', methods=['GET'])
+def getStaticData():
+    data = []
+    zone_ids = []
+    zone_data = []
+    zone_id = Zone.objects()
+    for zone in range(Zone.objects.count()):
+        zone_ids.append(zone_id[zone].id)                 #getting zone ids
+        zone_data.append(Zone.objects.get(id=zone_ids[zone]))    #zone data
+        row_data = []
+        row_ids = []
+        zoneID = zone_data[zone]['zoneID']
+        row_id = StaticRow.objects(zoneID=zoneID)          #getting row ids using zoneID, as StaticRow objects
+        for row in range(zone_data[zone]['rows']):
+            row_ids.append(row_id[row].id)                  #getting objectID of each row using StaticRow objects
+            row_data.append(StaticRow.objects.get(id=row_ids[row]))         #StaticRow data of zoneID as a list
+
+        data.append({'ZoneData': zone_data[zone], 'RowData': row_data})      #static zone data + all of its row's static data
+
+    return jsonify({'result': 'success', 'message': data})                   #returning all static data as [{'zoneData':zone1, 'rowData':{row1, row2 ...}}, {'zoneData':zone2, 'rowData':{row1,row2, ...}, ...]
+
+@app.route('/getHistoricalData/<timeStamp>', methods=['GET'])
+def getHistoricalDataMethod(timeStamp):
+    rowDataReq = []
+    rowData_objectIDs = []
+    rowData_objects = DynamicRow.objects()
+    for data in range(DynamicRow.objects.count()):
+        rowData_objectIDs.append(rowData_objects[data].id)
+        rowData = DynamicRow.objects.get(id=rowData_objectIDs[data])
+        if int(rowData.timeStamp) >= int(timeStamp):
+            rowDataReq.append(rowData)
+
+    return jsonify({'result': 'success', 'message': rowDataReq})
